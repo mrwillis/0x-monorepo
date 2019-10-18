@@ -1,6 +1,5 @@
 import { ContractError, ContractWrappers, ForwarderError } from '@0x/contract-wrappers';
 import { assetDataUtils } from '@0x/order-utils';
-import { MarketOperation } from '@0x/types';
 import { AbiEncoder, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from '@0x/web3-wrapper';
 import { MethodAbi } from 'ethereum-types';
@@ -12,6 +11,7 @@ import {
     ForwarderSmartContractParams,
     ForwarderSwapQuoteExecutionOpts,
     ForwarderSwapQuoteGetOutputOpts,
+    MarketOperation,
     SmartContractParamsInfo,
     SwapQuote,
     SwapQuoteConsumerBase,
@@ -29,16 +29,13 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
 
     private readonly _contractWrappers: ContractWrappers;
 
-    constructor(supportedProvider: SupportedProvider, options: Partial<SwapQuoteConsumerOpts> = {}) {
+    constructor(supportedProvider: SupportedProvider, contractWrappers: ContractWrappers, options: Partial<SwapQuoteConsumerOpts> = {}) {
         const { networkId } = _.merge({}, constants.DEFAULT_SWAP_QUOTER_OPTS, options);
         assert.isNumber('networkId', networkId);
-
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         this.provider = provider;
         this.networkId = networkId;
-        this._contractWrappers = new ContractWrappers(this.provider, {
-            networkId,
-        });
+        this._contractWrappers = contractWrappers;
     }
 
     /**

@@ -38,11 +38,11 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
         this.provider = provider;
         this.networkId = networkId;
 
-        this._exchangeConsumer = new ExchangeSwapQuoteConsumer(supportedProvider, options);
-        this._forwarderConsumer = new ForwarderSwapQuoteConsumer(supportedProvider, options);
         this._contractWrappers = new ContractWrappers(this.provider, {
             networkId,
         });
+        this._exchangeConsumer = new ExchangeSwapQuoteConsumer(supportedProvider, this._contractWrappers, options);
+        this._forwarderConsumer = new ForwarderSwapQuoteConsumer(supportedProvider, this._contractWrappers, options);
     }
 
     /**

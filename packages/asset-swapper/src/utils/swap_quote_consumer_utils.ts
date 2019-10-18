@@ -1,6 +1,6 @@
 import { ContractWrappers } from '@0x/contract-wrappers';
 import { assetDataUtils } from '@0x/order-utils';
-import { MarketOperation, SignedOrder } from '@0x/types';
+import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { SupportedProvider, Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider } from 'ethereum-types';
@@ -10,6 +10,7 @@ import { constants } from '../constants';
 import {
     ExtensionContractType,
     GetExtensionContractTypeOpts,
+    MarketOperation,
     SwapQuote,
     SwapQuoteConsumerError,
     SwapQuoteExecutionOpts,
@@ -58,8 +59,7 @@ export const swapQuoteConsumerUtils = {
     },
     isValidForwarderSwapQuote(swapQuote: SwapQuote, wethAssetData: string): boolean {
         return (
-            swapQuoteConsumerUtils.isValidForwarderSignedOrders(swapQuote.orders, wethAssetData) &&
-            swapQuoteConsumerUtils.isValidForwarderSignedOrders(swapQuote.feeOrders, wethAssetData)
+            swapQuoteConsumerUtils.isValidForwarderSignedOrders(swapQuote.orders, wethAssetData)
         );
     },
     isValidForwarderSignedOrders(orders: SignedOrder[], wethAssetData: string): boolean {
