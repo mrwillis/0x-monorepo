@@ -71,13 +71,13 @@ def assert_valid(data: Mapping, schema_id: str) -> None:
     ...      'senderAddress': '0x0000000000000000000000000000000000000000',
     ...      'exchangeAddress': '0x4f833a24e1f95d70f028921e27040ca56e09ab0b',
     ...      'feeRecipientAddress': (
-    ...          '0x0000000000000000000000000000000000000000',
+    ...          '0x0000000000000000000000000000000000000000'
     ...      ),
     ...      'makerAssetData': (
-    ...          NETWORK_TO_ADDRESSES[NetworkId.MAINNET].zrx_token,
+    ...          NETWORK_TO_ADDRESSES[NetworkId.MAINNET].zrx_token
     ...      ),
     ...      'takerAssetData': (
-    ...          NETWORK_TO_ADDRESSES[NetworkId.MAINNET].ether_token,
+    ...          NETWORK_TO_ADDRESSES[NetworkId.MAINNET].ether_token
     ...      ),
     ...      'salt': random.randint(1, 100000000000000000),
     ...      'makerFee': 0,

@@ -40,6 +40,12 @@ except ImportError:
         """No-op input validator."""
 
 
+try:
+    from .middleware import MIDDLEWARE  # type: ignore
+except ImportError:
+    pass
+
+
 class Tuple0x246f9407(TypedDict):
     """Python representation of a tuple or struct.
 
@@ -233,7 +239,6 @@ class AcceptsAnArrayOfBytesMethod(ContractMethod):
             parameter_name="a",
             argument_value=a,
         )
-        a = [bytes.fromhex(a_element.decode("utf-8")) for a_element in a]
         return a
 
     def call(
@@ -420,7 +425,6 @@ class MultiInputMultiOutputMethod(ContractMethod):
             parameter_name="index_1",
             argument_value=index_1,
         )
-        index_1 = bytes.fromhex(index_1.decode("utf-8"))
         self.validator.assert_valid(
             method_name="multiInputMultiOutput",
             parameter_name="index_2",
@@ -618,7 +622,6 @@ class AcceptsBytesMethod(ContractMethod):
         self.validator.assert_valid(
             method_name="acceptsBytes", parameter_name="a", argument_value=a
         )
-        a = bytes.fromhex(a.decode("utf-8"))
         return a
 
     def call(self, a: bytes, tx_params: Optional[TxParams] = None) -> None:
@@ -1953,14 +1956,29 @@ class AbiGenDummy:
         :param contract_address: where the contract has been deployed
         :param validator: for validation of method inputs.
         """
+        # pylint: disable=too-many-statements
+
         self.contract_address = contract_address
 
         if not validator:
             validator = AbiGenDummyValidator(provider, contract_address)
 
-        self._web3_eth = Web3(  # type: ignore # pylint: disable=no-member
-            provider
-        ).eth
+        web3 = Web3(provider)
+
+        # if any middleware was imported, inject it
+        try:
+            MIDDLEWARE
+        except NameError:
+            pass
+        else:
+            for middleware in MIDDLEWARE:
+                web3.middleware_onion.inject(  # type: ignore
+                    middleware["function"], layer=middleware["layer"]
+                )
+
+        self._web3_eth = (
+            web3.eth  # type: ignore # pylint: disable=no-member
+        )
 
         functions = self._web3_eth.contract(
             address=to_checksum_address(contract_address),
