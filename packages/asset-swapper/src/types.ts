@@ -266,7 +266,7 @@ export interface SwapQuoteRequestOpts {
  * expiryBufferMs: The number of seconds to add when calculating whether an order is expired or not. Defaults to 300s (5m).
  */
 export interface SwapQuoterOpts {
-    networkId?: number;
+    networkId: number;
     orderRefreshIntervalMs: number;
     expiryBufferMs: number;
 }
@@ -287,13 +287,9 @@ export enum SwapQuoteConsumerError {
  */
 export enum SwapQuoterError {
     NoEtherTokenContractFound = 'NO_ETHER_TOKEN_CONTRACT_FOUND',
-    NoZrxTokenContractFound = 'NO_ZRX_TOKEN_CONTRACT_FOUND',
     StandardRelayerApiError = 'STANDARD_RELAYER_API_ERROR',
     InsufficientAssetLiquidity = 'INSUFFICIENT_ASSET_LIQUIDITY',
-    InsufficientZrxLiquidity = 'INSUFFICIENT_ZRX_LIQUIDITY',
-    InvalidOrderProviderResponse = 'INVALID_ORDER_PROVIDER_RESPONSE',
     AssetUnavailable = 'ASSET_UNAVAILABLE',
-    FeeAssetUnavailable = 'FEE_ASSET_UNAVAILABLE',
 }
 
 /**

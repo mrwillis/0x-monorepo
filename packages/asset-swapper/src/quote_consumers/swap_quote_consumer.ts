@@ -30,6 +30,13 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
     private readonly _forwarderConsumer: ForwarderSwapQuoteConsumer;
     private readonly _contractWrappers: ContractWrappers;
 
+    public static getSwapQuoteConsumer(
+        supportedProvider: SupportedProvider,
+        options: Partial<SwapQuoteConsumerOpts> = {},
+    ): SwapQuoteConsumer {
+        return new SwapQuoteConsumer(supportedProvider, options);
+    }
+
     constructor(supportedProvider: SupportedProvider, options: Partial<SwapQuoteConsumerOpts> = {}) {
         const { networkId } = _.merge({}, constants.DEFAULT_SWAP_QUOTER_OPTS, options);
         assert.isNumber('networkId', networkId);
