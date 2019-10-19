@@ -171,10 +171,10 @@ function findMakerAssetAndTakerAssetAmountFromSellingTakerAsset(
              } = acc;
             const takerFillAmount = BigNumber.min(remainingTakerAssetFillAmount, order.remainingTakerAssetAmount);
             const takerFeeAmount = orderCalculationUtils.getTakerFeeAmount(order, takerFillAmount);
-            const takerAssetAmountForTakerFee = orderCalculationUtils.getMakerFillAmount(order, takerFeeAmount);
+            const takerAssetAmountForTakerFee = orderCalculationUtils.getTakerFillAmount(order, takerFeeAmount);
             const makerFillAmount = orderCalculationUtils.getMakerFillAmount(order, takerFillAmount);
             const adjustedMakerFillAmount = makerFillAmount.minus(takerFeeAmount);
-            const adjustedTakerFillAmount = takerFeeAmount.minus(takerAssetAmountForTakerFee);
+            const adjustedTakerFillAmount = takerFillAmount.minus(takerAssetAmountForTakerFee);
             return {
                 totalMakerAssetAmount: totalMakerAssetAmount.plus(adjustedMakerFillAmount),
                 totalAdjustedTakerAssetAmount: totalAdjustedTakerAssetAmount.plus(adjustedTakerFillAmount),
@@ -207,12 +207,20 @@ function findTakerTokenAndTakerFeeAmountNeededToBuyMakerAsset(
         prunedOrders,
         (acc, order) => {
             const { totalTakerTokenAmount, totalFeeTakerTokenAmount, remainingMakerAssetBuyAmount } = acc;
-            const makerFillAmount = BigNumber.min(remainingMakerAssetBuyAmount, order.remainingMakerAssetAmount);
-            const takerFillAmount = orderCalculationUtils.getTakerFeeAmount(order, makerFillAmount);
-            const takerFeeAmount = orderCalculationUtils.getTakerFeeAmount(order, takerFillAmount);
-            const takerAssetAmountForTakerFee = orderCalculationUtils.getMakerFillAmount(order, takerFeeAmount);
-            const adjustedMakerFillAmount = makerFillAmount.minus(takerFeeAmount);
-            const adjustedTakerFillAmount = takerFeeAmount.minus(takerAssetAmountForTakerFee);
+            let makerFillAmountWithTakerFees = order.remainingMakerAssetAmount;
+            if (remainingMakerAssetBuyAmount.lt(makerFillAmountWithTakerFees)) {
+                // retreives the total makerAsset we will be swapping for, along with taker fees
+                const adjustedRemainingMakerAssetBuyAmount = getAdjustedMakerAssetAmountWithTakerFees(order, remainingMakerAssetBuyAmount);
+                // if remaining amount + taker fees are fillable with the order, set makerFillAmountWithTakerFees to adjusted
+                if (adjustedRemainingMakerAssetBuyAmount.lt(makerFillAmountWithTakerFees)) {
+                    makerFillAmountWithTakerFees = adjustedRemainingMakerAssetBuyAmount;
+                }
+            }
+            const takerFillAmountWithFees = orderCalculationUtils.getTakerFillAmount(order, makerFillAmountWithTakerFees);
+            const takerFee = orderCalculationUtils.getTakerFeeAmount(order, takerFillAmountWithFees);
+            const adjustedMakerFillAmount = makerFillAmountWithTakerFees.minus(takerFee);
+            const takerAssetAmountForTakerFee = orderCalculationUtils.getTakerFillAmount(order, takerFee);
+            const adjustedTakerFillAmount = takerFillAmountWithFees.minus(takerAssetAmountForTakerFee);
             return {
                 totalTakerTokenAmount: totalTakerTokenAmount.plus(adjustedTakerFillAmount),
                 totalFeeTakerTokenAmount: totalFeeTakerTokenAmount.plus(takerAssetAmountForTakerFee),
@@ -232,4 +240,14 @@ function findTakerTokenAndTakerFeeAmountNeededToBuyMakerAsset(
         feeTakerTokenAmount: result.totalFeeTakerTokenAmount,
         takerTokenAmount: result.totalTakerTokenAmount,
     };
+}
+
+function getAdjustedMakerAssetAmountWithTakerFees(
+    order: PrunedSignedOrder,
+    makerAssetBuyAmount: BigNumber,
+): BigNumber {
+    // based on equation makerFillAmountWithFees = makerAssetBuyAmount / (1 - takerFee/makerAssetAmount)
+    const denominator = constants.ONE_AMOUNT.minus(order.takerFee.div(order.makerAssetAmount));
+    const makerAssetBuyAmountWithTakerFees = makerAssetBuyAmount.div(denominator).integerValue(BigNumber.ROUND_CEIL);
+    return makerAssetBuyAmountWithTakerFees;
 }

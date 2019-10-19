@@ -89,7 +89,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
                 type: MarketOperation.Buy,
             };
 
-            methodName = 'marketBuyOrders';
+            methodName = 'marketBuyOrdersFillOrKill';
         } else {
             const { takerAssetFillAmount } = quote;
 
@@ -100,7 +100,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
                 type: MarketOperation.Sell,
             };
 
-            methodName = 'marketSellOrders';
+            methodName = 'marketSellOrdersFillOrKill';
         }
 
         const methodAbi = utils.getMethodAbiFromContractAbi(
@@ -141,7 +141,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
             let txHash: string;
             if (quote.type === MarketOperation.Buy) {
                 const { makerAssetFillAmount } = quote;
-                txHash = await this._contractWrappers.exchange.marketBuyOrdersNoThrow.sendTransactionAsync(
+                txHash = await this._contractWrappers.exchange.marketBuyOrdersFillOrKill.sendTransactionAsync(
                     orders,
                     makerAssetFillAmount,
                     orders.map(o => o.signature),
@@ -153,7 +153,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
                 );
             } else {
                 const { takerAssetFillAmount } = quote;
-                txHash = await this._contractWrappers.exchange.marketSellOrdersNoThrow.sendTransactionAsync(
+                txHash = await this._contractWrappers.exchange.marketSellOrdersFillOrKill.sendTransactionAsync(
                     orders,
                     takerAssetFillAmount,
                     orders.map(o => o.signature),

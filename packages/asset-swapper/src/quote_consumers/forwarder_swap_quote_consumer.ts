@@ -52,7 +52,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
         const { toAddress, methodAbi, ethAmount, params } = await this.getSmartContractParamsOrThrowAsync(quote, opts);
 
         const abiEncoder = new AbiEncoder.Method(methodAbi);
-        const { orders, signatures, feeOrders, feeSignatures, feePercentage, feeRecipient } = params;
+        const { orders, signatures, feePercentage, feeRecipient } = params;
 
         let args: any[];
         if (params.type === MarketOperation.Buy) {
@@ -95,7 +95,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
 
         const quoteWithAffiliateFee = affiliateFeeUtils.getSwapQuoteWithAffiliateFee(quote, unFormattedFeePercentage);
 
-        const { orders, feeOrders, worstCaseQuoteInfo } = quoteWithAffiliateFee;
+        const { orders, worstCaseQuoteInfo } = quoteWithAffiliateFee;
 
         // lowercase input addresses
         const normalizedFeeRecipientAddress = feeRecipient.toLowerCase();
