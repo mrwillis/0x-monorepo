@@ -136,8 +136,8 @@ Constructing an order
 ...     expirationTimeSeconds=round(
 ...         (datetime.utcnow() + timedelta(days=1)).timestamp()
 ...     ),
-...     makerFeeAssetData=asset_data_utils.encode_erc20('0x' + '00'*20),
-...     takerFeeAssetData=asset_data_utils.encode_erc20('0x' + '00'*20),
+...     makerFeeAssetData='0x',
+...     takerFeeAssetData='0x',
 ... )
 >>> from pprint import pprint
 >>> pprint(order)
@@ -147,14 +147,14 @@ Constructing an order
  'makerAssetAmount': 100000000000000000,
  'makerAssetData': b...,
  'makerFee': 0,
- 'makerFeeAssetData': b...,
+ 'makerFeeAssetData': '0x',
  'salt': ...,
  'senderAddress': '0x0000000000000000000000000000000000000000',
  'takerAddress': '0x0000000000000000000000000000000000000000',
  'takerAssetAmount': 100000000000000000,
  'takerAssetData': b...,
  'takerFee': 0,
- 'takerFeeAssetData': b...}
+ 'takerFeeAssetData': '0x'}
 
 For this order to be valid, our Maker must sign a hash of it:
 
