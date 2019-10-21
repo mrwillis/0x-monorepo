@@ -178,11 +178,6 @@ For this order to be valid, our Maker must sign a hash of it:
 >>> exchange.get_order_info.call(order)
 (3, b..., 0)
 
->>> exchange.is_valid_hash_signature.call(
-...     order_hash_hex, Web3.toChecksumAddress(maker_address), maker_signature,
-... )
-True
-
 >>> exchange.is_valid_order_signature.call(
 ...     order, maker_signature
 ... )

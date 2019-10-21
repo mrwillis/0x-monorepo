@@ -19,7 +19,7 @@ Install the package with pip::
     pip install 0x-sra-client
 
 To interact with a 0x Relayer, you need the HTTP endpoint of the Relayer you'd
-like to connect to (eg https://api.radarrelay.com/0x/v2).
+like to connect to (eg https://api.radarrelay.com/0x/v3).
 
 For testing one can use the `0x-launch-kit-backend
 <https://github.com/0xProject/0x-launch-kit-backend#table-of-contents/>`_ to host
@@ -121,9 +121,11 @@ Post an order for our Maker to trade ZRX for WETH:
 ...     makerAssetData=asset_data_utils.encode_erc20(
 ...         contract_addresses.zrx_token
 ...     ),
+...     makerFeeAssetData=asset_data_utils.encode_erc20('0x'+'00'*20),
 ...     takerAssetData=asset_data_utils.encode_erc20(
 ...         contract_addresses.ether_token
 ...     ),
+...     takerFeeAssetData=asset_data_utils.encode_erc20('0x'+'00'*20),
 ...     salt=random.randint(1, 100000000000000000),
 ...     makerFee=0,
 ...     takerFee=0,
@@ -136,7 +138,7 @@ Post an order for our Maker to trade ZRX for WETH:
 
 >>> from zero_ex.order_utils import generate_order_hash_hex
 >>> order_hash_hex = generate_order_hash_hex(
-...     order, contract_addresses.exchange
+...     order, contract_addresses.exchange, Web3(eth_node).eth.chainId
 ... )
 >>> relayer.post_order_with_http_info(
 ...     network_id=network_id.value,
@@ -145,7 +147,8 @@ Post an order for our Maker to trade ZRX for WETH:
 ...         exchange_address=contract_addresses.exchange,
 ...         signature=sign_hash(
 ...             eth_node, Web3.toChecksumAddress(maker_address), order_hash_hex
-...         )
+...         ),
+...         chain_id=Web3(eth_node).eth.chainId,
 ...     )
 ... )[1]
 200
