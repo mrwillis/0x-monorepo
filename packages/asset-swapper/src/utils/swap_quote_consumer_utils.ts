@@ -68,17 +68,6 @@ export const swapQuoteConsumerUtils = {
     isValidForwarderSignedOrder(order: SignedOrder, wethAssetData: string): boolean {
         return order.takerAssetData === wethAssetData;
     },
-    optimizeOrdersForMarketExchangeOperation(orders: SignedOrder[], operation: MarketOperation): SignedOrder[] {
-        return _.map(orders, (order: SignedOrder, index: number) => {
-            const optimizedOrder = _.clone(order);
-            if (operation === MarketOperation.Sell && index !== 0) {
-                optimizedOrder.takerAssetData = constants.NULL_BYTES;
-            } else if (index !== 0) {
-                optimizedOrder.makerAssetData = constants.NULL_BYTES;
-            }
-            return optimizedOrder;
-        });
-    },
     async getExtensionContractTypeForSwapQuoteAsync(
         quote: SwapQuote,
         contractWrappers: ContractWrappers,
